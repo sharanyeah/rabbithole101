@@ -1,0 +1,8 @@
+# Python dependencies for RabbitHole resource fetching
+# Currently using only Python stdlib - no external packages required
+# This file is kept for future extensibility
+
+# For potential future enhancements:
+# requests>=2.31.0
+# beautifulsoup4>=4.12.0
+# lxml>=4.9.0

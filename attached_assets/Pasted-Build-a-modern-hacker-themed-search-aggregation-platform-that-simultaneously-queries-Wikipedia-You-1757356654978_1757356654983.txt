@@ -1,0 +1,313 @@
+Build a modern, hacker-themed search aggregation platform that simultaneously queries Wikipedia, YouTube, Reddit, and Medium to provide comprehensive search results. The platform features a dark aesthetic with neon green accents, collapsible sidebar with search history, and responsive design.
+
+Technology Stack
+Frontend
+React 18 with TypeScript
+Vite as build tool
+Tailwind CSS with custom dark theme
+Shadcn/ui component library (Radix UI primitives)
+TanStack Query for server state management
+Wouter for lightweight routing
+JetBrains Mono monospace font
+Backend
+Node.js with Express.js and TypeScript
+Python scripts for API integration (requests, BeautifulSoup4)
+PostgreSQL with Drizzle ORM (optional, defaults to in-memory)
+External APIs
+Wikipedia REST API (free)
+YouTube Data API v3 (requires API key)
+Reddit JSON API (public)
+Medium (web scraping fallback)
+Design System
+Color Palette
+:root {
+  --background: hsl(0 0% 0%);           /* Pure black */
+  --foreground: hsl(125 100% 63%);      /* Neon green */
+  --primary: hsl(142 76% 36%);          /* Primary green */
+  --secondary: hsl(142 76% 56%);        /* Secondary green */
+  --border: hsl(220 13% 18%);           /* Dark borders */
+  --muted: hsl(220 13% 18%);            /* Muted backgrounds */
+  --card: hsl(220 13% 18%);             /* Card backgrounds */
+}
+Typography
+Primary: Inter font family
+Monospace: JetBrains Mono for code/hacker aesthetic
+Sizes: Responsive typography with proper line heights
+Animations
+Fade-in animations for search results
+Pulse glow effects on interactive elements
+Smooth transitions for hover states
+Loading spinners with cursor blink effects
+Project Structure
+├── client/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ui/               # Shadcn components
+│   │   │   ├── search-bar.tsx    # Main search input
+│   │   │   ├── search-sidebar.tsx # History sidebar
+│   │   │   ├── results-container.tsx # Results display
+│   │   │   └── result-accordion.tsx  # Individual result cards
+│   │   ├── hooks/
+│   │   │   ├── use-local-history.ts  # Local storage management
+│   │   │   ├── use-mobile.tsx        # Responsive breakpoints
+│   │   │   └── use-toast.ts          # Toast notifications
+│   │   ├── lib/
+│   │   │   ├── queryClient.ts        # TanStack Query setup
+│   │   │   └── utils.ts              # Utility functions
+│   │   ├── pages/
+│   │   │   └── home.tsx              # Main search page
+│   │   ├── App.tsx                   # Router setup
+│   │   ├── main.tsx                  # React entry point
+│   │   └── index.css                 # Global styles
+│   └── index.html                    # HTML template
+├── server/
+│   ├── utils/
+│   │   ├── fetch_wikipedia.py        # Wikipedia API integration
+│   │   ├── fetch_youtube.py          # YouTube API integration
+│   │   ├── fetch_reddit.py           # Reddit API scraping
+│   │   └── fetch_medium.py           # Medium web scraping
+│   ├── index.ts                      # Express server entry
+│   ├── routes.ts                     # API route definitions
+│   ├── storage.ts                    # Data storage layer
+│   └── vite.ts                       # Vite dev integration
+├── shared/
+│   └── schema.ts                     # Shared TypeScript types
+└── configuration files...
+Core Components Implementation
+1. Main Search Interface (home.tsx)
+// Key features:
+- Centered search bar with neon green styling
+- Real-time search with debouncing
+- Loading states with animated indicators
+- Results display in accordion format
+- Sidebar toggle for search history
+- Mobile-responsive hamburger menu
+- Error handling with toast notifications
+2. Search Bar Component (search-bar.tsx)
+// Features:
+- Large input field with "GO" button
+- Placeholder text with fade effects
+- Loading spinner with "Searching across multiple sources..."
+- Form submission handling
+- Keyboard shortcuts (Enter to search)
+- Focus management and accessibility
+3. Results Container (results-container.tsx)
+// Features:
+- Grid layout for result cards
+- Source-specific styling (Wikipedia, YouTube, Reddit, Medium)
+- Hover effects with green glow shadows
+- Responsive grid (1-4 columns based on screen size)
+- Click-through tracking
+- Result count display per source
+4. Search Sidebar (search-sidebar.tsx)
+// Features:
+- Collapsible sidebar with slide animations
+- Search history with timestamps
+- Click to re-run previous searches
+- Clear all history functionality
+- Mobile-friendly drawer on smaller screens
+- Local storage persistence
+5. Local History Hook (use-local-history.ts)
+// Functionality:
+- Store last 50 searches in localStorage
+- Add new searches with timestamps
+- Remove duplicates automatically
+- Clear all history option
+- JSON serialization/deserialization
+- Error handling for corrupted data
+Backend API Implementation
+1. Express Server Setup (index.ts)
+// Configuration:
+- Express.js with TypeScript
+- CORS enabled for development
+- JSON body parsing
+- Request logging middleware
+- Error handling middleware
+- Vite integration for development
+- Production static file serving
+- Port 5000 (Replit standard)
+2. API Routes (routes.ts)
+// Endpoints:
+GET /api/search?query={query}     // Multi-source search
+GET /api/search/history           // Retrieve search history
+DELETE /api/search/history        // Clear search history
+// Features:
+- Parallel Python script execution
+- Error handling with graceful degradation
+- Response caching
+- Search history persistence
+- Result aggregation and formatting
+3. Python Fetchers
+Wikipedia Fetcher (fetch_wikipedia.py)
+# Features:
+- Wikipedia REST API integration
+- Search suggestions and page content
+- Extract summaries and links
+- Handle disambiguation pages
+- Rate limiting compliance
+- Error handling for network issues
+YouTube Fetcher (fetch_youtube.py)
+# Features:
+- YouTube Data API v3 integration
+- Video search with metadata
+- Thumbnail URLs and view counts
+- Duration and upload date
+- Channel information
+- API key authentication
+- Quota management
+Reddit Fetcher (fetch_reddit.py)
+# Features:
+- Reddit JSON API scraping
+- Multiple subreddit search
+- Post titles, scores, and comments
+- Time-based sorting (hot, top, new)
+- User-Agent rotation
+- Rate limiting compliance
+- Fallback endpoints
+Medium Fetcher (fetch_medium.py)
+# Features:
+- Web scraping with BeautifulSoup4
+- Article titles and summaries
+- Author information and claps
+- Publication date extraction
+- Fallback to generated content
+- Error handling for blocked requests
+Database Schema (PostgreSQL + Drizzle)
+Tables
+-- Users table
+users: id (uuid), username (varchar), password (varchar), created_at (timestamp)
+-- Search history
+search_history: id (uuid), query (text), timestamp (timestamp), user_id (uuid)
+-- Search results cache
+search_results: id (uuid), query (text), source (varchar), results (jsonb), timestamp (timestamp)
+Drizzle Configuration
+// Features:
+- Type-safe database operations
+- Automatic migration generation
+- Connection pooling
+- Environment-based configuration
+- In-memory fallback for development
+Environment Setup
+Required Environment Variables
+PORT=5000
+DATABASE_URL=postgresql://username:password@localhost:5432/rabbithole
+YOUTUBE_API_KEY=your_youtube_api_key_here
+NODE_ENV=development
+Package Dependencies
+Frontend (package.json)
+{
+  "dependencies": {
+    "react": "^18.2.0",
+    "@tanstack/react-query": "^5.0.0",
+    "wouter": "^3.0.0",
+    "@radix-ui/react-accordion": "^1.0.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.0.0"
+  }
+}
+Python (pyproject.toml)
+[project]
+dependencies = [
+    "requests>=2.32.5",
+    "beautifulsoup4>=4.13.5",
+    "lxml>=4.9.0"
+]
+Step-by-Step Build Process
+Phase 1: Project Initialization
+Create new Replit with Node.js template
+Initialize Vite + React + TypeScript
+Configure Tailwind CSS with custom theme
+Set up project structure and directories
+Phase 2: Frontend Development
+Install and configure Shadcn/ui components
+Create global CSS with hacker theme
+Build search bar component with animations
+Implement results container with grid layout
+Add sidebar with search history
+Create responsive mobile navigation
+Phase 3: Backend Development
+Set up Express server with TypeScript
+Create API routes for search and history
+Implement Python fetcher scripts
+Add database schema with Drizzle
+Configure environment variables
+Test API endpoints
+Phase 4: Integration & Testing
+Connect frontend to backend APIs
+Implement error handling and loading states
+Test search functionality across all sources
+Optimize performance and caching
+Add accessibility features
+Mobile responsiveness testing
+Phase 5: Deployment
+Configure Replit deployment settings
+Set environment variables in Replit
+Test production build
+Monitor API rate limits
+Performance optimization
+Key Features Implementation
+1. Multi-Source Search
+Parallel API execution (2-3 second response time)
+Error handling with graceful degradation
+Result deduplication and ranking
+Source attribution and formatting
+2. User Interface
+Dark theme with neon green accents
+Smooth animations and transitions
+Responsive design (mobile-first)
+Accessibility compliance (ARIA labels, keyboard navigation)
+3. Search History
+Local storage persistence
+Timestamp tracking
+Click to re-search functionality
+Clear history option
+4. Performance
+TanStack Query caching
+Debounced search inputs
+Lazy loading for large result sets
+Optimized bundle splitting
+5. API Integration
+YouTube API key authentication
+Rate limiting compliance
+Fallback mechanisms
+Error logging and monitoring
+API Key Setup
+YouTube Data API v3
+Go to Google Cloud Console
+Create new project or select existing
+Enable YouTube Data API v3
+Create credentials (API key)
+Add API key to Replit environment variables
+Set daily quota limits (10,000 requests/day free)
+Environment Variable Configuration in Replit
+Open Secrets tab in Replit
+Add key: YOUTUBE_API_KEY
+Add value: Your Google API key
+Save and restart application
+Testing Strategy
+Frontend Testing
+Component rendering tests
+User interaction testing
+Responsive design validation
+Accessibility compliance checks
+Backend Testing
+API endpoint functionality
+Python script execution
+Error handling scenarios
+Database operations (if used)
+Integration Testing
+End-to-end search workflows
+Cross-browser compatibility
+Performance benchmarking
+API rate limit handling
+Security Considerations
+API Security
+Environment variable protection
+Rate limiting implementation
+Input validation and sanitization
+CORS configuration
+Data Privacy
+No user tracking or personal data collection
+Search history stored locally only
+No persistent user sessions
+Transparent data usage

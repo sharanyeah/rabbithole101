@@ -1,0 +1,47 @@
+
+services:
+  - type: web
+    name: rabbithole-learning-platform
+    runtime: node
+    region: oregon
+    plan: starter
+    rootDir: .
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # Add your API keys in Render dashboard:
+      # - key: GOOGLE_API_KEY
+      #   value: your_google_api_key_here
+      # - key: YOUTUBE_API_KEY
+      #   value: your_youtube_api_key_here
+    autoDeploy: true
+    healthCheckPath: /
+    disk:
+      name: rabbithole-disk
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
+    dockerfilePath: ./Dockerfile
+    preDeployCommand: |
+      echo "Installing Python dependencies..."
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+      echo "Build process starting..."
+    
+  # Optional: Redis service for caching (if needed)
+  # - type: redis
+  #   name: rabbithole-redis
+  #   plan: starter
+  #   region: oregon
+  #   maxmemoryPolicy: allkeys-lru
+
+# Optional: PostgreSQL database service
+# databases:
+#   - name: rabbithole-db
+#     plan: starter
+#     region: oregon
+#     databaseName: rabbithole
+#     user: rabbithole_user
